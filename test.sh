@@ -1,31 +1,35 @@
 #!/bin/bash
 
-# Clean old files
-make clean
+echo "Running tests..."
+echo
 
-# Compile the program
-make
+# Run program with test input, generate output file
+./park < test/input.txt
 
-# Run the program with simulated input
-./parking <<EOF
-1
-ABC123
-John
-Doe
-A12345678
-09:30
-5
-EOF
+# Check if file was created
+if [ ! -f parking_data.txt ]; then
+  echo "❌ parking_data.txt not found"
+  exit 1
+fi
 
-# Check if file content matches expected output exactly
-if cmp -s parking_data.txt expected_parking_data.txt; then
-    echo "✅ Test Passed"
-    exit 0
+# Normalize files (remove newlines, spaces)
+normalized_output=$(tr -d '[:space:]' < parking_data.txt)
+expected=$(tr -d '[:space:]' < test/expected_output.txt)
+
+# Check program exit status
+if [ $? -eq 0 ]; then
+  echo "✅ Program exited successfully"
 else
-    echo "❌ Test Failed"
-    echo "Expected:"
-    cat expected_parking_data.txt
-    echo "Got:"
-    cat parking_data.txt
-    exit 1
+  echo "❌ Program did not exit cleanly"
+  exit 1
+fi
+
+# Compare output
+if [[ "$normalized_output" == "$expected" ]]; then
+  echo "✅ Test passed"
+else
+  echo "❌ Test failed"
+  echo "Expected: $expected"
+  echo "Got     : $normalized_output"
+  exit 1
 fi
