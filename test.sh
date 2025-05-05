@@ -1,29 +1,31 @@
 #!/bin/bash
 
-echo "Running tests..."
-echo
+# Clean old files
+make clean
 
-# Run program and redirect input/output
-./university < test/input.txt > test/actual_output.txt
+# Compile the program
+make
 
-# Check if program exited cleanly
-if [ $? -eq 0 ]; then
-    echo "✅ Program exited successfully"
+# Run the program with simulated input
+./parking <<EOF
+1
+ABC123
+John
+Doe
+A12345678
+09:30
+5
+EOF
+
+# Check if file content matches expected output exactly
+if cmp -s parking_data.txt expected_parking_data.txt; then
+    echo "✅ Test Passed"
+    exit 0
 else
-    echo "❌ Program did not exit cleanly"
-    exit 1
-fi
-
-# Normalize whitespace
-filtered_output=$(tr -d '[:space:]' < test/actual_output.txt)
-expected_output=$(tr -d '[:space:]' < test/expected_output.txt)
-
-# Compare outputs
-if [[ "$filtered_output" == "$expected_output" ]]; then
-    echo "✅ Test passed"
-else
-    echo "❌ Test failed"
-    echo "Expected: $expected_output"
-    echo "Got     : $filtered_output"
+    echo "❌ Test Failed"
+    echo "Expected:"
+    cat expected_parking_data.txt
+    echo "Got:"
+    cat parking_data.txt
     exit 1
 fi
