@@ -1,15 +1,10 @@
 # Compiler
 # Makefile
 
-all: university
-
-university: university.cpp
-	g++ -o university university.cpp
-
-test: university
-	bash test.sh
+all:
+	g++ -o parking parking.cpp
 
 clean:
-	rm -f university
+	rm -f parking parking_data.txt
 
 
