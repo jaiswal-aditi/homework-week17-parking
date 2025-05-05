@@ -1,10 +1,18 @@
 # Compiler
 # Makefile
 
-all:
-	g++ -o parking parking.cpp
+CC = g++
+TARGET = park
+
+all: $(TARGET)
+
+$(TARGET): parking.cpp
+	$(CC) parking.cpp -o $(TARGET)
 
 clean:
-	rm -f parking parking_data.txt
+	rm -f $(TARGET) parking_data.txt test/actual_output.txt
+
+test: $(TARGET)
+	bash test.sh
 
 
